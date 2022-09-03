@@ -10,13 +10,15 @@ export const cleanFMData= (rawFSData) => {
 }
 
 export const extractSubData = (rawSubData) => {
-    var fields_to_be_extracted = ["subcatchment_id", "population", "wastewater_profile", "base_flow", "additional_foul_flow", "trade_flow", "trade_profile"] 
+    var fields_to_be_extracted = ["subcatchment_id", "population", "wastewater_profile", "base_flow", "additional_foul_flow", "trade_flow", "trade_profile", "user_text_10"] 
     var indices = fields_to_be_extracted.map((item) => rawSubData[0].indexOf(item))
     var returnData = []
     for(var i = 1; i < rawSubData.length-1; i++){
         let obj = {}
         indices.forEach((index, j) => {
-            obj[`${fields_to_be_extracted[j]}`] = ( fields_to_be_extracted[j] === "subcatchment_id" ? rawSubData[i][index] : Number(rawSubData[i][index]))
+            var field = fields_to_be_extracted[j]
+            var key = field === "user_text_10" ? "FM" : field 
+            obj[`${key}`] = ( ["subcatchment_id", "user_text_10"].includes(field) ? rawSubData[i][index] : Number(rawSubData[i][index]))
         })
         returnData.push(obj)
     }

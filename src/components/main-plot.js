@@ -27,12 +27,12 @@ export const MainPlot = ({xArray, fsData, yRange}) => {
                     title: "Flow Graph",
                     autosize: false,
                     width: 1080 *0.9,
-                    height: 700,
+                    height: 500,
                     margin: {
-                    l: 120,
+                    l: 100,
                     r: 10,
                     b: 200,
-                    t: 150,
+                    t: 50,
                     pad: 20
                     },
                     paper_bgcolor: 'white',

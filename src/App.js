@@ -2,46 +2,40 @@ import './App.css';
 import React, { useState } from 'react';
 import { Header } from './components/header';
 import FM from './wrappers/fm_dwf';
-import CSVReader from './components/uploder';
+// import FM from './wrappers/my-table-backup';
+import CSVReader from './components/csv-reader';
 import { cleanFMData, extractSubData, extractWWGData } from './core-functions/cleanup_and_extraction';
 
 function App() {
 
-  const [rawFSData, setrawFSData] = useState(null)
-  const [rawSubData, setrawSubData] = useState(null)
-  const [rawLinksData, setrawLinksData] = useState(null)
-  const [rawWWGData, setrawWWGData] = useState(null)
-  const [rawTFGData, setrawTFGData] = useState(null)
-
-  if(rawFSData){
-    var cleanedFMData = cleanFMData(rawFSData)
-  }
-
-  if(rawSubData){
-    var extractedSubData = extractSubData(rawSubData)
-  }
-
-  if(rawWWGData){
-    var extractedWWGData = extractWWGData(rawWWGData)
-  }
-
-  if(rawTFGData){
-    var extractedTFGData = extractWWGData(rawTFGData)
-  }
+  const [FSData, setFSData] = useState(null)
+  const [SubData, setSubData] = useState(null)
+  // const [rawLinksData, setrawLinksData] = useState(null)
+  const [WWGData, setWWGData] = useState(null)
+  const [TFGData, setTFGData] = useState(null)
  
-  var FMIndex = 1
+  var FMID = "FM001"
 
   return (
     <div className="App">
       <Header />
       <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
-        <CSVReader setData={setrawFSData} label={"FS Data"}/>
-        <CSVReader setData={setrawSubData} label={"exported Sub Data"}/>
-        <CSVReader setData={setrawLinksData} label={"exported FM Links Data"}/>
-        <CSVReader setData={setrawWWGData} label={"exported WWG Data"}/>
-        <CSVReader setData={setrawTFGData} label={"exported TWG Data"}/>
+        <CSVReader setData={setFSData} label={"FS Data"} parser={cleanFMData}/>
+        <CSVReader setData={setSubData} label={"exported Sub Data"} parser={extractSubData}/>
+        {/* <CSVReader setData={setrawLinksData} label={"exported FM Links Data"}/> */}
+        <CSVReader setData={setWWGData} label={"exported WWG Data"} parser={extractWWGData}/>
+        <CSVReader setData={setTFGData} label={"exported TWG Data"} parser={extractWWGData}/>
       </div>
-      {rawFSData && <FM index={FMIndex} xArray={cleanedFMData.ts} fsData={cleanedFMData.values} subData={extractedSubData}/>}
+      
+      {FSData && 
+      <FM 
+        FMID={FMID}
+        xArray={FSData.ts} 
+        fsData={FSData.values} 
+        subData={SubData}
+        WWGData={WWGData}
+        TFGData={TFGData}
+        />}
     </div>
   );
 }

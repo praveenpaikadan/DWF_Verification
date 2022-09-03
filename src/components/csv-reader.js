@@ -80,7 +80,7 @@ const styles = {
   },
 };
 
-export default function CSVReader({setData, label}) {
+export default function CSVReader({setData, label,parser}) {
   const { CSVReader } = useCSVReader();
   const [zoneHover, setZoneHover] = useState(false);
   const [removeHoverColor, setRemoveHoverColor] = useState(
@@ -91,7 +91,7 @@ export default function CSVReader({setData, label}) {
     <CSVReader
       onUploadAccepted={(results) => {
         // console.log(results);
-        setData(results.data)
+        setData(parser(results.data))
         setZoneHover(false);
       }}
       onDragOver={(event) => {
