@@ -5,6 +5,7 @@ import FM from './wrappers/fm_dwf';
 // import FM from './wrappers/my-table-backup';
 import CSVReader from './components/csv-reader';
 import { cleanFMData, extractSubData, extractWWGData } from './core-functions/cleanup_and_extraction';
+import { FDV_R_Upload } from './components/fdv_r_upload';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
     <div className="App">
       <Header />
       <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+        <FDV_R_Upload />
         <CSVReader setData={setFSData} label={"FS Data"} parser={cleanFMData}/>
         <CSVReader setData={setSubData} label={"exported Sub Data"} parser={extractSubData}/>
         {/* <CSVReader setData={setrawLinksData} label={"exported FM Links Data"}/> */}

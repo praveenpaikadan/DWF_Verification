@@ -64,12 +64,13 @@ return (
             <div style={{flex: 1}}>
                 <RightTabs 
                     fullSCTable={subcatchmentTable &&   
-                    <RWTable 
-                        columns={Object.keys(subcatchmentTable[0])}
-                        data={subcatchmentTable}
-                        dataType={Object.keys(subcatchmentTable[0]).map((item) => ["subcatchment_id", "FM"].includes(item) ? "text" : "number" )}
-                        updateTable={updateTable}
-                    />
+                        <RWTable 
+                            columns={Object.keys(subcatchmentTable[0])}
+                            data={subcatchmentTable}
+                            dataType={Object.keys(subcatchmentTable[0]).map((item) => ["subcatchment_id", "FM"].includes(item) ? "text" : "number" )}
+                            updateTable={updateTable}
+                            tableDimension={[800, 400]}
+                        />
                     
                     // <ReactTable 
                     //     columns={createColumnHeaderDataForReactTable(Object.keys(subData[0]))}
@@ -78,7 +79,9 @@ return (
                     //     cellDimensions={[CELL_WIDTH, CELL_HEIGHT]}
                     // />
                 
-                }
+                    }
+                    WWGData={WWGData}
+                    TFGData={TFGData}
                 /> 
 
                 

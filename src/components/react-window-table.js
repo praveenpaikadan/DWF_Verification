@@ -6,7 +6,7 @@ const CELL_HEIGHT = 30
 const COLUMN_HEADER_HEIGHT = 20
 const ROW_HEADER_WIDTH = 100
  
-export const RWTable = ({columns, data, dataType, updateTable}) => {
+export const RWTable = ({columns, data, dataType, updateTable, tableDimension}) => {
 
     const [focused, setFocused] = useState(false)
     useEffect(() => {
@@ -26,15 +26,15 @@ export const RWTable = ({columns, data, dataType, updateTable}) => {
         <Grid
             columnCount={columns.length}
             columnWidth={CELL_WIDTH}
-            height={400}
+            height={tableDimension? tableDimension[1]: 400}
             rowCount={data.length}
             rowHeight={CELL_HEIGHT}
-            width={800}
+            width={tableDimension? tableDimension[0]: 800}
         >
             {({ columnIndex, rowIndex, style }) => {
                 let rowData = data[rowIndex] 
                 let sub_id = rowData["subcatchment_id"]
-                let field =columns[columnIndex]
+                let field = Object.keys(rowData)[columnIndex]
                 let id = `${rowIndex}_${columnIndex}_input_id`
 
                 return(

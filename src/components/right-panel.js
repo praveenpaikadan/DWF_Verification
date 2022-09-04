@@ -1,7 +1,9 @@
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import { TFG } from './tfg';
+import { WWG } from './wwg';
 
-export const RightTabs = ({fullSCTable, exclusiveUsScTable, fullUsScTable}) => {
+export const RightTabs = ({fullSCTable, WWGData, TFGData}) => {
 
   return(
     <Tabs>
@@ -23,19 +25,19 @@ export const RightTabs = ({fullSCTable, exclusiveUsScTable, fullUsScTable}) => {
         <h2>Any content 2</h2>
       </TabPanel>
       <TabPanel>
-        {exclusiveUsScTable}
+        {/* {exclusiveUsScTable} */}
       </TabPanel>
       <TabPanel>
-        {fullUsScTable}
+        {/* {fullUsScTable} */}
       </TabPanel>
       <TabPanel>
         <h2>Any content 5</h2>
       </TabPanel>
       <TabPanel>
-        <h2>Any content 6</h2>
+        <WWG WWGData={WWGData} />
       </TabPanel>
       <TabPanel>
-        <h2>Any content 7</h2>
+        <TFG TFGData={TFGData} />
       </TabPanel>
       <TabPanel>
         {fullSCTable}
