@@ -1,3 +1,63 @@
+const getTimeInDisplayFormat = (date) => {
+
+    function pad2(n) {
+        return (n < 10 ? '0' : '') + n;
+    }
+    
+    var month = pad2(date.getMonth()+1);//months (0-11)
+    var day = pad2(date.getDate());//day (1-31)
+    var year= date.getFullYear();
+    var hour= pad2(date.getHours());
+    var mins = pad2(date.getMinutes());
+    
+    var formattedDate =  day+"/"+month+"/"+year+" "+hour+":"+mins;
+    return(formattedDate); //28-02-2021
+}
+
+export const generateTimeSeriesData = (startString, endString, intervel) => {
+        
+    // console.log(startString, endString, intervel)
+
+    const parseInputTimeString = (timeString) => {
+        var dateArray = []
+        for(var i = 0; i<5; i++){
+            dateArray.push(timeString.substring(i*2, (i*2)+2))
+        }
+        dateArray[0] = "20" + dateArray[0]
+        dateArray = dateArray.map(item => Number(item))
+        dateArray[1] = dateArray[1] - 1
+        return dateArray
+    }
+
+    var startTimeStamp = new Date(...parseInputTimeString(startString)).getTime()
+    var endTimeStamp = new Date(...parseInputTimeString(endString)).getTime()
+    var intervelInMs = Number(intervel)*60*1000
+
+    var timeSeries = []
+    for(let i = startTimeStamp; i <= endTimeStamp; i = i + intervelInMs ){
+        timeSeries.push(getTimeInDisplayFormat(new Date(i)))    
+    }
+
+    return ({startTimeStamp, endTimeStamp, timeSeries})
+}
+
+export const generateTimeSeriesDataFromStartEndTimeStamp = (startTimeStamp, endTimeStamp, intervelInMs) => {
+        
+    // console.log(startString, endString, intervel)
+
+    var timeSeries = []
+    for(let i = startTimeStamp; i <= endTimeStamp; i = i + intervelInMs * 60*1000 ){
+        timeSeries.push(getTimeInDisplayFormat(new Date(i)))    
+    }
+
+    return (timeSeries)
+}
+
+const convertDataStringToArray = (string) => {
+    return string.split(' ').filter(item => item !== "")
+}
+
+
 export const cleanFMData= (rawFSData) => {
     var cleanedTS = []
     var cleanedValues = []
@@ -23,7 +83,7 @@ export const extractSubData = (rawSubData) => {
         returnData.push(obj)
     }
 
-    console.log(returnData)
+    // console.log(returnData)
     return returnData
 }
 
@@ -73,7 +133,7 @@ export const extractWWGData = (rawWWGData) => {
         }
         
     }
-    console.log(profiles)
+    // console.log(profiles)
     return profiles
 }
 
@@ -124,62 +184,18 @@ export const extractTFGData = (rawWWGData) => {
         
     }
 
-    console.log(profiles)
+    // console.log(profiles)
     return profiles
 }
 
 export const extractFDVData = (dataArray) => {
-    
-    const convertDataStringToArray = (string) => {
-        return string.split(' ').filter(item => item !== "")
-    }
-
-    const generateTimeSeriesData = (startString, endString, intervel) => {
-        
-        const getTimeInFormat = (date) => {
-
-            function pad2(n) {
-                return (n < 10 ? '0' : '') + n;
-            }
-            
-            var month = pad2(date.getMonth()+1);//months (0-11)
-            var day = pad2(date.getDate());//day (1-31)
-            var year= date.getFullYear();
-            var hour= pad2(date.getHours());
-            var mins = pad2(date.getMinutes());
-            
-            var formattedDate =  day+"/"+month+"/"+year+" "+hour+":"+mins;
-            return(formattedDate); //28-02-2021
-        }
-
-        const parseInputTimeString = (timeString) => {
-            var dateArray = []
-            for(var i = 0; i<5; i++){
-                dateArray.push(timeString.substring(i*2, (i*2)+2))
-            }
-            dateArray[0] = "20" + dateArray[0]
-            dateArray = dateArray.map(item => Number(item))
-            dateArray[1] = dateArray[1] - 1
-            return dateArray
-        }
-
-        var startTimestamp = new Date(...parseInputTimeString(startString)).getTime()
-        var endTimeStamp = new Date(...parseInputTimeString(endString)).getTime()
-        var intervelInMs = Number(intervel)*60*1000
-
-        var timeSeries = []
-        for(let i = startTimestamp; i <= endTimeStamp; i = i + intervelInMs ){
-            timeSeries.push(getTimeInFormat(new Date(i)))    
-        }
-
-        return ({startTimestamp, endTimeStamp, timeSeries})
-    }
 
     // getting pipe dia and MH id
     var indexOfMetaData = dataArray.findIndex((item) => item[0] === '*CSTART') + 1
     var metaDataStringArray = convertDataStringToArray(dataArray[indexOfMetaData][0])
     var pipeDia = Number(metaDataStringArray[0])
     var mhId = metaDataStringArray[2]
+    var identifier = dataArray[1][1].trim()
 
     // getting starting, ending time and intervel
     var indexOfTimeData = indexOfMetaData + 1
@@ -187,8 +203,7 @@ export const extractFDVData = (dataArray) => {
     var startDate = timeDataStringArray[0]
     var endData = timeDataStringArray[1]
     var intervel = timeDataStringArray[2]
-    var {startTimestamp, endTimeStamp, timeSeries} = generateTimeSeriesData(startDate, endData, intervel)
-
+    var {startTimeStamp, endTimeStamp, timeSeries} = generateTimeSeriesData(startDate, endData, intervel)
 
     // getting FDV data
     var startIndexOfFDVData = dataArray.findIndex((item) => item[0] === '*CEND') + 1
@@ -198,23 +213,58 @@ export const extractFDVData = (dataArray) => {
     var depth = []
     var velocity = []
 
-    var temp = []
-
     for(let i = startIndexOfFDVData; i <= endIndexOfFDVData; i++){
         var row = convertDataStringToArray(dataArray[i][0])
-        temp.push(row)
-        for(let j=0; j<4; j=j+1){
-            if(row[j]===undefined){break}
-            flow.push(Number(row[0+(j*3)]))
+        for(let j=0; j<5; j=j+1){
+            if(row[(j*3)] === undefined){break}
+            flow.push(Number(row[(j*3)]))
             depth.push(Number(row[1+(3*j)]/1000))
             velocity.push(Number(row[2+(3*j)]))
         }
     }
 
-    console.log(temp)
-    console.log(flow)
-    console.log(depth)
-    console.log(velocity)
-
-    return 
+    return {startTimeStamp, endTimeStamp, intervel: Number(intervel) , timeSeries, flow, depth, velocity, pipeDia, mhId, identifier}
 }
+
+export const extractRData = (dataArray) => {
+
+    // getting pipe dia and MH id
+    // var indexOfMetaData = dataArray.findIndex((item) => item[0] === '*CSTART') + 1
+    // var metaDataStringArray = convertDataStringToArray(dataArray[indexOfMetaData][0])
+    // var pipeDia = Number(metaDataStringArray[0])
+    // var mhId = metaDataStringArray[2]
+    var identifier = dataArray[1][1].trim()
+
+    // getting starting, ending time and intervel
+    
+    // getting FDV data
+    var startIndexOfFDVData = dataArray.findIndex((item) => item[0] === '*CEND') + 1
+    var endIndexOfFDVData = dataArray.findIndex((item) => item[0] === '*END') - 1
+
+    var indexOfTimeData = startIndexOfFDVData - 2
+    var timeDataStringArray = convertDataStringToArray(dataArray[indexOfTimeData][0])
+    var startDate = timeDataStringArray[0]
+    var endData = timeDataStringArray[1]
+    var intervel = timeDataStringArray[2]
+    var {startTimeStamp, endTimeStamp, timeSeries} = generateTimeSeriesData(startDate, endData, intervel)
+
+    var rain = []
+    
+    for(let i = startIndexOfFDVData; i <= endIndexOfFDVData; i++){
+        var row = convertDataStringToArray(dataArray[i][0])
+        for(let j=0; j<5; j=j+1){
+            if(row[j] !=0 && !row[j]){break}
+            rain.push(Number(row[j]))
+        }
+    }
+    
+    return {startTimeStamp, endTimeStamp,intervel: Number(intervel), timeSeries, rain, identifier}
+}
+
+export const shiftBeginingWithNaN = (data, beginAt, currentBegining, intervelInMins) => { 
+    var numberOfNaNsToBeAdded = (currentBegining - beginAt) / (intervelInMins *60* 1000)
+    var begin = Array(numberOfNaNsToBeAdded).fill(NaN)
+
+    console.log(data, beginAt, currentBegining, intervelInMins)
+    return begin.concat(data) 
+}   

@@ -47,3 +47,18 @@
   border-radius: 8px;
   background: rgba(0,0,0, 0.2);
 }
+
+.file-upload-wrapper {
+  font-family: sans-serif;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.file-upload-label {
+  width: 350px;
+  box-sizing: border-box;
+}

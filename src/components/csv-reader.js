@@ -18,13 +18,13 @@ const GREY_DIM = '#686868';
 const styles = {
   zone: {
     alignItems: 'center',
-    border: `2px dashed ${GREY}`,
-    borderRadius: 20,
+    border: `2px dashed rgba(0,0,0,0.5)`,
+    borderRadius: 5,
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
     justifyContent: 'center',
-    padding: 20,
+    padding: 10,
     margin: 10,
   },
   file: {

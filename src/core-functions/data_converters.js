@@ -19,3 +19,19 @@ export const arrayMinMax = (arr) =>
         Number.POSITIVE_INFINITY,
         Number.NEGATIVE_INFINITY,
     ]);
+
+export const sortArrayBasedOnString = (array, key) => { 
+    array.sort((a, b) => {
+        let fa = a[key].toLowerCase(),
+            fb = b[key].toLowerCase();
+    
+        if (fa < fb) {
+            return -1;
+        }
+        if (fa > fb) {
+            return 1;
+        }
+        return 0;
+    });
+    return array
+}
