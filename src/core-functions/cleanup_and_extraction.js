@@ -217,7 +217,7 @@ export const extractFDVData = (dataArray) => {
         var row = convertDataStringToArray(dataArray[i][0])
         for(let j=0; j<5; j=j+1){
             if(row[(j*3)] === undefined){break}
-            flow.push(Number(row[(j*3)]))
+            flow.push(Number(row[(j*3)])/1000)
             depth.push(Number(row[1+(3*j)]/1000))
             velocity.push(Number(row[2+(3*j)]))
         }

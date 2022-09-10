@@ -46,7 +46,7 @@ export const MainPlot = ({xArray, RGData, FMData, label}) => {
       var trace4 = {
         x: xArray,
         y: RGData.rain,
-        type: 'bar',
+        // type: 'bar',
         name: "Rain",
         yaxis: 'y4',
         marker: {
