@@ -19,7 +19,7 @@ export const FDV_R_Upload = ({fullFSData, setFullFSData, setFullFinalTS}) => {
             let monitorData = FSData[i]
             let fields = monitorData.type === "FDV" ?  ["depth", "flow", "velocity"] : ["rain"]
 
-            console.log(monitorData, fields)
+            // console.log(monitorData, fields)
 
             for(let param of fields){
                 // FSData[i]["unAdjusted_" + param] = monitorData[param] 
@@ -56,11 +56,11 @@ export const FDV_R_Upload = ({fullFSData, setFullFSData, setFullFinalTS}) => {
                 readString(fr.result, {
                     worker: true,
                     complete: (results) => {
-                        console.log(results)
+                        // console.log(results)
                         let extracted = type === "FDV" ? extractFDVData(results["data"]) : extractRData(results["data"]) 
                         extracted.type = type
                         fullData.push(extracted)
-                        console.log(extracted)
+                        // console.log(extracted)
                         if(fullData.length === totalValidFiles){
                             let FSData = postParsingProcess(fullData)
                             setFullFSData(FSData)

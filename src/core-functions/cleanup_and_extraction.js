@@ -265,6 +265,6 @@ export const shiftBeginingWithNaN = (data, beginAt, currentBegining, intervelInM
     var numberOfNaNsToBeAdded = (currentBegining - beginAt) / (intervelInMins *60* 1000)
     var begin = Array(numberOfNaNsToBeAdded).fill(NaN)
 
-    console.log(data, beginAt, currentBegining, intervelInMins)
+    // console.log(data, beginAt, currentBegining, intervelInMins)
     return begin.concat(data) 
 }   

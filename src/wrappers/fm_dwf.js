@@ -17,12 +17,22 @@ const ROW_HEADER_WIDTH = 100
 export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
     // control of which FMID is active
 
+    const [pipeDias, setPipeDias] = useState({})
+    const [mhIDs, setMHIDs] = useState({})
+
+    // setInterval(()=> {console.log(pipeDias)}, 1000)
+
     const [RGIDs, setRGIDs] = useState(null)
     const [FMIDs, setFMIDs] = useState(null)
 
     const [activeFMID, setActiveFMID] = useState(null)
     const [activeRGID, setActiveRGID] = useState(null)
-    const [displayMetaData, setDisplayMetaData] = useState(null)
+
+    const updatePipeDias = (value, identifier) => {
+        let old = {...pipeDias}
+        old[identifier] = value
+        setPipeDias(old) 
+    }
 
     useEffect(() => {
         // sorting FS Data based on identifier name 
@@ -32,15 +42,22 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
         // setting RGID and FMID list
         var a = []
         var b = []
+        var pipedias = {}
+        var mhids = {}
         FSData.forEach((element, index) => {
             if(element.type === "FDV"){
                 a.push(element.identifier)
+                pipedias[element.identifier] = element.pipeDia/10
+                mhids[element.identifier] = element.mhId
             }else{
                 b.push(element.identifier)
             }
         });
 
-        // console.log(a, b)
+        console.log(mhids)
+
+        setPipeDias(pipedias)
+        setMHIDs(mhids)
         setFMIDs(a)
         setRGIDs(b)
         setActiveFMID(a[0])
@@ -88,21 +105,34 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
     return (
         <div>
             <div style={{display: 'flex', flexDirection: 'row'}}>
-                
-                <div style={{flex: 1}}> 
-                    <div style={{display: 'flex', flexDirection: 'row', justifyContent:'space-between', alignItems: 'center'}}>
-                        <Scroller values={FMIDs} value={activeFMID} setValue={setActiveFMID} label={"FM ID"}/>
-                        <label>{displayMetaData}</label>
-                        <Scroller values={RGIDs} value={activeRGID} setValue={setActiveRGID} label={"RGID"}/>
+                <div style={{flex: 1, paddingLeft: 10}}>
+                    <div className={"fs-graph-wrapper"} style={{borderRadius: 5}}> 
+                        <div style={{display: 'flex', flexDirection: 'row', justifyContent:'space-between', alignItems: 'center'}}>
+                            <div style={{display: 'flex', flexDirection : 'row', alignItems: 'center'}}>
+                                <Scroller values={FMIDs} value={activeFMID} setValue={setActiveFMID} label={"FM ID"}/>
+                                <div style={{marginLeft: 20}}>
+                                    <label>Pipe Size: </label>
+                                    <input style={{width: 50, border: "none", borderBottom:'2px solid rgba(0,0,0,0.4)', textAlign:'center'}} onChange={(e) => {updatePipeDias(e.target.value, activeFMID)}} value={pipeDias[activeFMID]} />
+                                    <label style={{marginLeft: 10}}>mm</label>
+                                </div>
+
+                                <div style={{marginLeft: 20}}>
+                                    <label>MH ID: </label>
+                                    <label>{mhIDs[activeFMID]}</label>
+                                </div>
+
+                            </div>
+                            <Scroller values={RGIDs} value={activeRGID} setValue={setActiveRGID} label={"RGID"}/>
+                        </div>
+                        <LeftPanel 
+                            FSData={FSData}
+                            pipeDia={pipeDias[activeFMID]}
+                            setActiveFMID={setActiveFMID}
+                            fullFinalTS={fullFinalTS}
+                            activeFMID={activeFMID}
+                            activeRGID={activeRGID}
+                        />
                     </div>
-                    <LeftPanel 
-                        FSData={FSData}  
-                        setActiveFMID={setActiveFMID}
-                        fullFinalTS={fullFinalTS}
-                        activeFMID={activeFMID}
-                        activeRGID={activeRGID}
-                        setDisplayMetaData={setDisplayMetaData}
-                    />
                 </div>
 
                 <div style={{flex: 1}}>

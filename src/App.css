@@ -62,3 +62,9 @@
   width: 350px;
   box-sizing: border-box;
 }
+
+.fs-graph-wrapper{
+  -webkit-box-shadow: 0px 10px 25px -18px rgba(0,0,0,1);
+-moz-box-shadow: 0px 10px 25px -18px rgba(0,0,0,1);
+box-shadow: 0px 10px 25px -18px rgba(0,0,0,1);
+}
