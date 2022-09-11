@@ -8,7 +8,6 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
 
     const [rainBar, setRainBar] = useState(false)
     const [surchargeLevel, setSurchargeLevel] = useState(false)
-    const [lockX, setLockX] = useState(false)
 
     // axis locks
     var fields = ["depth", "flow", "velocity", "rain"]
@@ -113,8 +112,6 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
 
     var intialTraces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", "S"], rAs: "line"})
 
-    console.log(intialTraces)
-
     const [plotState, setPlotState] = useState(
         {
             data: intialTraces,
@@ -189,48 +186,52 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
             },
         }
     )
-      
-    useEffect(() => {
-        var traces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", surchargeLevel ? "S" : null], rAs: rainBar ? "bar" : "line"})
-        var oldState = {...plotState}
-        oldState.data = traces
 
-        // locking y
+    const lockX = () => {
+        var oldState = {...plotState}
+        oldState.layout["xaxis"].autorange = false
+        setPlotState(oldState)
+    }  
+
+    // locking y axis useEffect
+    useEffect(() => {
+        var oldState = {...plotState}
         for(var i = 0; i< axisLocks.length; i++){
             if(axisLocks[i].locked === true){
                 oldState.layout[axisLocks[i]["axis"]].range = axisLocks[i]["bounds"]
                 oldState.layout[axisLocks[i]["axis"]].autorange = false
-
-
             }else{
                 delete oldState.layout[axisLocks[i]["axis"]].range
                 oldState.layout[axisLocks[i]["axis"]].autorange = true
             }
         }
-
-        // locking x
-        oldState.layout["xaxis"].autorange = !lockX
-        // console.log(oldState.layout)
         setPlotState(oldState)
-
-
-    }, [RGData, FMData, rainBar, pipeDia, surchargeLevel, axisLocks])
+    }, [axisLocks])
+      
+    //change data useEffect
+    useEffect(() => {
+        var traces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", surchargeLevel ? "S" : null], rAs: rainBar ? "bar" : "line"})
+        var oldState = {...plotState}
+        oldState.data = traces
+        setPlotState(oldState)
+    }, [RGData, FMData, rainBar, pipeDia, surchargeLevel])
 
     return (
         <div>
             <div>
-                <div style={{zIndex: 100, display: 'flex', flexDirection: 'row', position:'relative', top: 5, left: 80}}>
-                    <div style={{width: 330, display: 'flex'}}>
-                        <input type={"checkbox"} checked={surchargeLevel} onChange={(e) => {setSurchargeLevel(e.target.checked)}}/>
-                        <label style={{fontSize: 12}}>Display surcharge level</label>
-                    </div>
-                    <div style={{width: 330, display: 'flex'}}>
-                        <input type={"checkbox"} checked={rainBar} onChange={(e) => {setRainBar(e.target.checked)}}/>
-                        <label style={{fontSize: 12}}>Show rain as bar chart</label>
-                    </div>
+                <div style={{zIndex: 100, display: 'flex', flexDirection: 'row', position:'relative', top: 5, left: 80, justifyContent:'space-between'}}>
+                    <div style={{ display: 'flex', flexDirection: 'row'}}>
+                        <div style={{width: 330, display: 'flex'}}>
+                            <input type={"checkbox"} checked={surchargeLevel} onChange={(e) => {setSurchargeLevel(e.target.checked)}}/>
+                            <label style={{fontSize: 12}}>Display surcharge level</label>
+                        </div>
+                        <div style={{width: 330, display: 'flex'}}>
+                            <input type={"checkbox"} checked={rainBar} onChange={(e) => {setRainBar(e.target.checked)}}/>
+                            <label style={{fontSize: 12}}>Show rain as bar chart</label>
+                        </div>
+                    </div>    
                     <div style={{width: 300, display: 'flex'}}>
-                        <input type={"checkbox"} checked={lockX} onChange={(e) => {setLockX(e.target.checked)}}/>
-                        <label style={{fontSize: 12}}>Lock x axis at current view</label>
+                        <button onClick={() => {lockX()}} style={styles.lockX}>Lock time axis in current view</button>
                     </div>
                 </div>
 
@@ -277,5 +278,12 @@ const styles = {
     },
     axisControlText: {
         fontSize: 12
-    }
+    },
+    lockX: {
+        fontSize: 12,
+        backgroundColor: 'rgba(0,0,0,0.05)',
+        border: "0.5px solid rgba(0,0,0,0.1)",
+        borderRadius: 5,
+        color: 'rgba(0,0,0,0.8)'
+    },
 }
