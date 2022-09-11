@@ -112,6 +112,8 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
 
     var intialTraces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", "S"], rAs: "line"})
 
+    // console.log(intialTraces)
+
     const [plotState, setPlotState] = useState(
         {
             data: intialTraces,
@@ -186,35 +188,32 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
             },
         }
     )
-
+      
     const lockX = () => {
         var oldState = {...plotState}
         oldState.layout["xaxis"].autorange = false
         setPlotState(oldState)
-    }  
+    } 
 
-    // locking y axis useEffect
     useEffect(() => {
+        var traces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", surchargeLevel ? "S" : null], rAs: rainBar ? "bar" : "line"})
         var oldState = {...plotState}
+        oldState.data = traces
+
+        // locking y
         for(var i = 0; i< axisLocks.length; i++){
             if(axisLocks[i].locked === true){
                 oldState.layout[axisLocks[i]["axis"]].range = axisLocks[i]["bounds"]
                 oldState.layout[axisLocks[i]["axis"]].autorange = false
+
+
             }else{
                 delete oldState.layout[axisLocks[i]["axis"]].range
                 oldState.layout[axisLocks[i]["axis"]].autorange = true
             }
         }
         setPlotState(oldState)
-    }, [axisLocks])
-      
-    //change data useEffect
-    useEffect(() => {
-        var traces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", surchargeLevel ? "S" : null], rAs: rainBar ? "bar" : "line"})
-        var oldState = {...plotState}
-        oldState.data = traces
-        setPlotState(oldState)
-    }, [RGData, FMData, rainBar, pipeDia, surchargeLevel])
+    }, [RGData, FMData, rainBar, pipeDia, surchargeLevel, axisLocks])
 
     return (
         <div>
