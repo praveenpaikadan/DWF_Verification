@@ -9,8 +9,10 @@ const getTimeInDisplayFormat = (date) => {
     var year= date.getFullYear();
     var hour= pad2(date.getHours());
     var mins = pad2(date.getMinutes());
+    var secs = pad2(date.getSeconds())
     
-    var formattedDate =  day+"/"+month+"/"+year+" "+hour+":"+mins;
+    // var formattedDate =  day+"/"+month+"/"+year+" "+hour+":"+mins;
+    var formattedDate =  year+"-"+month+"-"+day+" "+hour+":"+mins+":"+secs;
     return(formattedDate); //28-02-2021
 }
 

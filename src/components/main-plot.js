@@ -8,11 +8,12 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
 
     const [rainBar, setRainBar] = useState(false)
     const [surchargeLevel, setSurchargeLevel] = useState(false)
+    const [lockX, setLockX] = useState(false)
 
     // axis locks
     var fields = ["depth", "flow", "velocity", "rain"]
-    var locks = fields.map(field => {return {field: field, locked: false, bounds: ["", ""]}})
-
+    var axes = ["yaxis3", "yaxis2", "yaxis", "yaxis4"]
+    var locks = fields.map((field, j) => {return {field: field, axis: axes[j],locked: false, bounds: ["", ""]}})
     const [axisLocks, setAxisLocks] = useState(locks)
 
     const updateLockStatus = (index, status) => {
@@ -104,15 +105,17 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
     }
 
     const returnTraces = ({xArray, FMData, RGData, pipeDia, which, rAs}) => {
-        let FDVTraces = createFDVTraces(xArray, FMData)
-        let RTaces =  createRTrace(xArray, RGData, rAs)
-        let surchargeLevelTrace = which.includes("S") ? createSurchargeLevelTrace(xArray, pipeDia, FMData.depth.length) : []
+        let FDVTraces = FMData ? createFDVTraces(xArray, FMData) : []
+        let RTaces =  RGData ? createRTrace(xArray, RGData, rAs) : []
+        let surchargeLevelTrace = pipeDia && which.includes("S") ? createSurchargeLevelTrace(xArray, pipeDia, FMData.depth.length) : []
         return FDVTraces.concat(RTaces.concat(surchargeLevelTrace))
     }
 
     var intialTraces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", "S"], rAs: "line"})
 
-      const [plotState, setPlotState] = useState(
+    console.log(intialTraces)
+
+    const [plotState, setPlotState] = useState(
         {
             data: intialTraces,
             layout: {
@@ -121,7 +124,42 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
                     title: "Time",
                     gridwidth: 1,
                     zeroline: true,
+                    type: 'date',
+                    showgrid: true,
+                    linewidth: 1,
+                    linecolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(0,0,0,0.2)',
                 },
+
+                yaxis: {
+                    title: "Velocity(m/s)",
+                    domain: [0, 0.24],
+                    linewidth: 1,
+                    linecolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(0,0,0,0.2)',
+                },
+                yaxis2: {
+                    title: "Flow(m3/s)", 
+                    domain: [0.26, 0.49],
+                    linewidth: 1,
+                    linecolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(0,0,0,0.2)',
+                },
+                yaxis3: {
+                    title: "Depth(m)", 
+                    domain: [0.51, 0.74],
+                    linewidth: 1,
+                    linecolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(0,0,0,0.2)',
+                },
+                yaxis4: {
+                    title: "Rain(mmhr)", 
+                    domain: [0.76, 1],
+                    linewidth: 1,
+                    linecolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(0,0,0,0.2)',
+                },
+
                 // title: "Flow Survey",
                 autosize: false,
                 width: 1080 *0.9,
@@ -133,14 +171,14 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
                     t: 25,
                     pad: 2
                 },
+                font: {
+                    size: 11,
+                    // family: 'Courier New, monospace',
+                    weight: '300'
+                },
                 paper_bgcolor: 'white',
                 plot_bgcolor: 'white',
                 showlegend: false,
-            
-                yaxis: {title: "Velocity(m/s)",domain: [0, 0.24],},
-                yaxis2: {title: "Flow(m3/s)", domain: [0.26, 0.49]},
-                yaxis3: {title: "Depth(m)", domain: [0.51, 0.74]},
-                yaxis4: {title: "Rain(mmhr)", domain: [0.76, 1]}
             },
 
             frames: [],
@@ -156,33 +194,61 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
         var traces = returnTraces({xArray, FMData, RGData, pipeDia, which: ["FDV", "R", surchargeLevel ? "S" : null], rAs: rainBar ? "bar" : "line"})
         var oldState = {...plotState}
         oldState.data = traces
+
+        // locking y
+        for(var i = 0; i< axisLocks.length; i++){
+            if(axisLocks[i].locked === true){
+                oldState.layout[axisLocks[i]["axis"]].range = axisLocks[i]["bounds"]
+                oldState.layout[axisLocks[i]["axis"]].autorange = false
+
+
+            }else{
+                delete oldState.layout[axisLocks[i]["axis"]].range
+                oldState.layout[axisLocks[i]["axis"]].autorange = true
+            }
+        }
+
+        // locking x
+        oldState.layout["xaxis"].autorange = !lockX
+        // console.log(oldState.layout)
         setPlotState(oldState)
-    }, [RGData, FMData, rainBar, pipeDia, surchargeLevel])
+
+
+    }, [RGData, FMData, rainBar, pipeDia, surchargeLevel, axisLocks])
 
     return (
         <div>
-            <div style={{zIndex: 100, display: 'flex', flexDirection: 'row', position:'relative', top: 5, left: 80}}>
-                <div style={{width: 330, display: 'flex'}}>
-                    <input type={"checkbox"} checked={surchargeLevel} onChange={(e) => {setSurchargeLevel(e.target.checked)}}/>
-                    <label style={{fontSize: 12}}>Display surcharge level</label>
+            <div>
+                <div style={{zIndex: 100, display: 'flex', flexDirection: 'row', position:'relative', top: 5, left: 80}}>
+                    <div style={{width: 330, display: 'flex'}}>
+                        <input type={"checkbox"} checked={surchargeLevel} onChange={(e) => {setSurchargeLevel(e.target.checked)}}/>
+                        <label style={{fontSize: 12}}>Display surcharge level</label>
+                    </div>
+                    <div style={{width: 330, display: 'flex'}}>
+                        <input type={"checkbox"} checked={rainBar} onChange={(e) => {setRainBar(e.target.checked)}}/>
+                        <label style={{fontSize: 12}}>Show rain as bar chart</label>
+                    </div>
+                    <div style={{width: 300, display: 'flex'}}>
+                        <input type={"checkbox"} checked={lockX} onChange={(e) => {setLockX(e.target.checked)}}/>
+                        <label style={{fontSize: 12}}>Lock x axis at current view</label>
+                    </div>
                 </div>
-                <div style={{width: 330, display: 'flex'}}>
-                    <input type={"checkbox"} checked={surchargeLevel} onChange={(e) => {setSurchargeLevel(e.target.checked)}}/>
-                    <label style={{fontSize: 12}}>Lock time axis</label>
-                </div>
-                <div style={{width: 300, display: 'flex'}}>
-                    <input type={"checkbox"} checked={rainBar} onChange={(e) => {setRainBar(e.target.checked)}}/>
-                    <label style={{fontSize: 12}}>Show rain as bar chart</label>
-                </div>
-            </div>
 
-            <div style={{zIndex: 101, display: 'flex', flexDirection: 'row', position:'relative', top: 5, left: 80, flexWrap:'wrap', width: 750}}>
-                {axisLocks.map((item, index) => 
-                        <div style={{width: 330, display: 'flex'}} key={String(index)}>
-                            <input type={"checkbox"} checked={item.locked} onChange={(e) => {updateLockStatus(index, e.target.checked)}}/>
-                            <label style={styles.axisControlText}>Lock {item.field} axis between <input value={item.bounds[0]} onChange={(e) => {updateLockBounds(index, 0, e.target.value)}} style={styles.minMaxInput} /> and <input value={item.bounds[1]} onChange={(e) => {updateLockBounds(index, 1, e.target.value)}} style={styles.minMaxInput} /></label>
-                        </div>
-                    )}
+                <div style={{zIndex: 101, display: 'flex', flexDirection: 'row', position:'relative', top: 5, left: 80, flexWrap:'wrap', width: 750}}>
+                    {axisLocks.map((item, index) => 
+                            <div style={{width: 300, display: 'flex', justifyContent:'space-between', alignItems:'center', marginRight: 30}} key={String(index)}>
+                                <span>
+                                    <input type={"checkbox"} checked={item.locked} onChange={(e) => {updateLockStatus(index, e.target.checked)}}/>
+                                    <label style={{...styles.axisControlText}}>Lock {item.field} axis between </label>
+                                </span>
+                                <span style={{}}> 
+                                    <input type="number" value={item.bounds[0]} onChange={(e) => {updateLockBounds(index, 0, e.target.value)}} style={styles.minMaxInput} /> 
+                                    <label style={styles.axisControlText}> and </label>
+                                    <input type="number" value={item.bounds[1]} onChange={(e) => {updateLockBounds(index, 1, e.target.value)}} style={styles.minMaxInput} />
+                                </span>
+                            </div>
+                        )}
+                </div>
             </div>
         
             <Plot
@@ -202,11 +268,12 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
 
 const styles = {
     minMaxInput: {
-        width: 40,
-        height: 10,
+        width: 50,
+        height: 15,
         border: 'none',
         borderBottom: '2px solid rgba(0,0,0,0.3)',
-        fontSize: 10
+        fontSize: 10,
+        backgroundColor: 'rgba(0,0,0,0.05)'
     },
     axisControlText: {
         fontSize: 12

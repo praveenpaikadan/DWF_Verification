@@ -19,6 +19,7 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
 
     const [pipeDias, setPipeDias] = useState({})
     const [mhIDs, setMHIDs] = useState({})
+    const [orgPipeDias, setOrgPipeDias] = useState({})
 
     // setInterval(()=> {console.log(pipeDias)}, 1000)
 
@@ -37,26 +38,28 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
     useEffect(() => {
         // sorting FS Data based on identifier name 
         FSData = FSData.length > 0 ? FSData = sortArrayBasedOnString(FSData, "identifier") : FSData
-        // var identifiers = FSData.map(item => item.identifiers)
+
+        // console.log(FSData)
 
         // setting RGID and FMID list
         var a = []
         var b = []
         var pipedias = {}
+        var orgpipedias = {}
         var mhids = {}
         FSData.forEach((element, index) => {
             if(element.type === "FDV"){
                 a.push(element.identifier)
                 pipedias[element.identifier] = element.pipeDia/10
+                orgpipedias[element.identifier] = element.pipeDia
                 mhids[element.identifier] = element.mhId
             }else{
                 b.push(element.identifier)
             }
         });
 
-        console.log(mhids)
-
         setPipeDias(pipedias)
+        setOrgPipeDias(orgpipedias)
         setMHIDs(mhids)
         setFMIDs(a)
         setRGIDs(b)
@@ -98,7 +101,8 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
         } })
     }
     
-    if(!fullFinalTS || !activeFMID || !activeRGID) {
+    if(!fullFinalTS || activeFMID === null || activeRGID === null) {
+        console.log(fullFinalTS, activeFMID, activeRGID)
         return <label>Loading ...</label>
     }
 
@@ -108,17 +112,18 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
                 <div style={{flex: 1, paddingLeft: 10}}>
                     <div className={"fs-graph-wrapper"} style={{borderRadius: 5}}> 
                         <div style={{display: 'flex', flexDirection: 'row', justifyContent:'space-between', alignItems: 'center'}}>
-                            <div style={{display: 'flex', flexDirection : 'row', alignItems: 'center'}}>
+                            <div style={{display: 'flex', flexDirection : 'row', alignItems: 'center', fontSize: 13}}>
                                 <Scroller values={FMIDs} value={activeFMID} setValue={setActiveFMID} label={"FM ID"}/>
                                 <div style={{marginLeft: 20}}>
                                     <label>Pipe Size: </label>
-                                    <input style={{width: 50, border: "none", borderBottom:'2px solid rgba(0,0,0,0.4)', textAlign:'center'}} onChange={(e) => {updatePipeDias(e.target.value, activeFMID)}} value={pipeDias[activeFMID]} />
+                                    <input style={{width: 50, border: "none", borderBottom:'2px solid rgba(0,0,0,0.4)',backgroundColor: 'rgba(0,0,0,0.05)', textAlign:'center'}} onChange={(e) => {updatePipeDias(e.target.value, activeFMID)}} value={pipeDias[activeFMID]} />
                                     <label style={{marginLeft: 10}}>mm</label>
+                                    <label> ( Pipe size in file: {orgPipeDias[activeFMID] !== undefined ? orgPipeDias[activeFMID] : "N/A" } )</label>
                                 </div>
 
                                 <div style={{marginLeft: 20}}>
                                     <label>MH ID: </label>
-                                    <label>{mhIDs[activeFMID]}</label>
+                                    <label>{mhIDs[activeFMID] !== undefined ? mhIDs[activeFMID] : "N/A" }</label>
                                 </div>
 
                             </div>

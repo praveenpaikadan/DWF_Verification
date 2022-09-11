@@ -17,11 +17,11 @@ export const Scroller = ({values, setValue, value, label, selectStyle}) => {
     <div>
         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 3}}>
             <div style={{display: 'flex', alignItems: 'center', marginLeft: 30}}>
-                <FaAngleLeft color={values.indexOf(value) === 0?`rgba(0,0,0,0.4)`:`rgba(0,0,0,0.8)`} size={30} onClick={() => {handleClick(-1)}}/>
-                <select style={{width: 100, height: 30, borderRadius: 6,  ...selectStyle}} onChange={(e)=> setValue(e.target.value)} value={value}>
+                <FaAngleLeft color={values.indexOf(value) === 0?`rgba(0,0,0,0.1)`:`rgba(0,0,0,0.4)`} size={30} onClick={() => {handleClick(-1)}}/>
+                <select style={{width: 100, height: 25, borderRadius: 6, border: '1px solid rgba(0,0,0,0.1)',backgroundColor: 'rgba(0,0,0,0.05)', ...selectStyle}} onChange={(e)=> setValue(e.target.value)} value={value}>
                     {values.map((item, index) => <option key={String(item)} value={item}>{item}</option>)}
                 </select>
-                <FaAngleRight color={values.indexOf(value) === values.length - 1?`rgba(0,0,0,0.4)`:`rgba(0,0,0,0.8)`} size={30} onClick={() => {handleClick(1)}}/>
+                <FaAngleRight color={values.indexOf(value) === values.length - 1?`rgba(0,0,0,0.1)`:`rgba(0,0,0,0.4)`} size={30} onClick={() => {handleClick(1)}}/>
             </div>
         </div>
     </div>
