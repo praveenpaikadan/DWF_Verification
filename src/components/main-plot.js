@@ -215,6 +215,7 @@ export const MainPlot = ({xArray, RGData, FMData, label, pipeDia}) => {
         setPlotState(oldState)
     }, [RGData, FMData, rainBar, pipeDia, surchargeLevel, axisLocks])
 
+    
     return (
         <div>
             <div>
