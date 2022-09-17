@@ -1,4 +1,4 @@
-const getTimeInDisplayFormat = (date) => {
+export const getTimeInDisplayFormat = (date) => {
 
     function pad2(n) {
         return (n < 10 ? '0' : '') + n;
@@ -16,9 +16,9 @@ const getTimeInDisplayFormat = (date) => {
     return(formattedDate); //28-02-2021
 }
 
-export const generateTimeSeriesData = (startString, endString, intervel) => {
+export const generateTimeSeriesData = (startString, endString, interval) => {
         
-    // console.log(startString, endString, intervel)
+    // console.log(startString, endString, interval)
 
     const parseInputTimeString = (timeString) => {
         var dateArray = []
@@ -33,22 +33,22 @@ export const generateTimeSeriesData = (startString, endString, intervel) => {
 
     var startTimeStamp = new Date(...parseInputTimeString(startString)).getTime()
     var endTimeStamp = new Date(...parseInputTimeString(endString)).getTime()
-    var intervelInMs = Number(intervel)*60*1000
+    var intervalInMs = Number(interval)*60*1000
 
     var timeSeries = []
-    for(let i = startTimeStamp; i <= endTimeStamp; i = i + intervelInMs ){
+    for(let i = startTimeStamp; i <= endTimeStamp; i = i + intervalInMs ){
         timeSeries.push(getTimeInDisplayFormat(new Date(i)))    
     }
 
     return ({startTimeStamp, endTimeStamp, timeSeries})
 }
 
-export const generateTimeSeriesDataFromStartEndTimeStamp = (startTimeStamp, endTimeStamp, intervelInMs) => {
+export const generateTimeSeriesDataFromStartEndTimeStamp = (startTimeStamp, endTimeStamp, intervalInMs) => {
         
-    // console.log(startString, endString, intervel)
+    // console.log(startString, endString, interval)
 
     var timeSeries = []
-    for(let i = startTimeStamp; i <= endTimeStamp; i = i + intervelInMs * 60*1000 ){
+    for(let i = startTimeStamp; i <= endTimeStamp; i = i + intervalInMs * 60*1000 ){
         timeSeries.push(getTimeInDisplayFormat(new Date(i)))    
     }
 
@@ -199,13 +199,13 @@ export const extractFDVData = (dataArray) => {
     var mhId = metaDataStringArray[2]
     var identifier = dataArray[1][1].trim()
 
-    // getting starting, ending time and intervel
+    // getting starting, ending time and interval
     var indexOfTimeData = indexOfMetaData + 1
     var timeDataStringArray = convertDataStringToArray(dataArray[indexOfTimeData][0])
     var startDate = timeDataStringArray[0]
     var endData = timeDataStringArray[1]
-    var intervel = timeDataStringArray[2]
-    var {startTimeStamp, endTimeStamp, timeSeries} = generateTimeSeriesData(startDate, endData, intervel)
+    var interval = timeDataStringArray[2]
+    var {startTimeStamp, endTimeStamp, timeSeries} = generateTimeSeriesData(startDate, endData, interval)
 
     // getting FDV data
     var startIndexOfFDVData = dataArray.findIndex((item) => item[0] === '*CEND') + 1
@@ -225,7 +225,7 @@ export const extractFDVData = (dataArray) => {
         }
     }
 
-    return {startTimeStamp, endTimeStamp, intervel: Number(intervel) , timeSeries, flow, depth, velocity, pipeDia, mhId, identifier}
+    return {startTimeStamp, endTimeStamp, interval: Number(interval) , timeSeries, flow, depth, velocity, pipeDia, mhId, identifier}
 }
 
 export const extractRData = (dataArray) => {
@@ -237,7 +237,7 @@ export const extractRData = (dataArray) => {
     // var mhId = metaDataStringArray[2]
     var identifier = dataArray[1][1].trim()
 
-    // getting starting, ending time and intervel
+    // getting starting, ending time and interval
     
     // getting FDV data
     var startIndexOfFDVData = dataArray.findIndex((item) => item[0] === '*CEND') + 1
@@ -247,8 +247,8 @@ export const extractRData = (dataArray) => {
     var timeDataStringArray = convertDataStringToArray(dataArray[indexOfTimeData][0])
     var startDate = timeDataStringArray[0]
     var endData = timeDataStringArray[1]
-    var intervel = timeDataStringArray[2]
-    var {startTimeStamp, endTimeStamp, timeSeries} = generateTimeSeriesData(startDate, endData, intervel)
+    var interval = timeDataStringArray[2]
+    var {startTimeStamp, endTimeStamp, timeSeries} = generateTimeSeriesData(startDate, endData, interval)
 
     var rain = []
     
@@ -260,13 +260,13 @@ export const extractRData = (dataArray) => {
         }
     }
     
-    return {startTimeStamp, endTimeStamp,intervel: Number(intervel), timeSeries, rain, identifier}
+    return {startTimeStamp, endTimeStamp,interval: Number(interval), timeSeries, rain, identifier}
 }
 
-export const shiftBeginingWithNaN = (data, beginAt, currentBegining, intervelInMins) => { 
-    var numberOfNaNsToBeAdded = (currentBegining - beginAt) / (intervelInMins *60* 1000)
+export const shiftBeginingWithNaN = (data, beginAt, currentBegining, intervalInMins) => { 
+    var numberOfNaNsToBeAdded = (currentBegining - beginAt) / (intervalInMins *60* 1000)
     var begin = Array(numberOfNaNsToBeAdded).fill(NaN)
 
-    // console.log(data, beginAt, currentBegining, intervelInMins)
+    // console.log(data, beginAt, currentBegining, intervalInMins)
     return begin.concat(data) 
 }   

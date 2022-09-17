@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Schematic from '../components/fs-schematic';
 import { LeftPanel } from '../components/left-panel';
 import { MainPlot } from '../components/main-plot';
 import { ReactTable } from '../components/react-table';
@@ -109,6 +110,8 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
     return (
         <div>
             <div style={{display: 'flex', flexDirection: 'row'}}>
+
+                
                 <div style={{flex: 1, paddingLeft: 10}}>
                     <div className={"fs-graph-wrapper"} style={{borderRadius: 5}}> 
                         <div style={{display: 'flex', flexDirection: 'row', justifyContent:'space-between', alignItems: 'center'}}>
@@ -140,7 +143,7 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
                     </div>
                 </div>
 
-                <div style={{flex: 1}}>
+                {/* <div style={{flex: 1}}>
                     <RightTabs 
                         fullSCTable={subcatchmentTable &&   
                             <RWTable 
@@ -166,7 +169,9 @@ export const FM = ({FSData, subData, WWGData, TFGData, fullFinalTS}) => {
                     <div className='subcatchment-table'>
                         
                     </div>
-                </div>
+                </div> */}
+
+
             </div>
         </div>
 );

@@ -8,14 +8,14 @@ export const FDV_R_Upload = ({setFullFSData, setFullFinalTS}) => {
     const [status, setStatus] = useState("")
     const postParsingProcess = (FSData) => {
         //unique marking
-        FSData = FSData.map((item, index) => {item.identifier = item.identifier +"_"+ String(index); return item})
+        // FSData = FSData.map((item, index) => {item.identifier = item.identifier +"_"+ String(index); return item})
 
         // generating the xAxis that has to be the same for all the FMsl
         let timesOfStart = FSData.map(item => item.startTimeStamp)
         let timesOfEnd = FSData.map(item => item.endTimeStamp)
-        let intervel = FSData[0].intervel    
+        let interval = FSData[0].interval    
         let [startTime, endTime] = arrayMinMax([...timesOfStart, ...timesOfEnd])
-        setFullFinalTS(generateTimeSeriesDataFromStartEndTimeStamp(startTime, endTime, intervel))
+        setFullFinalTS(generateTimeSeriesDataFromStartEndTimeStamp(startTime, endTime, interval))
 
         // Balancing Start time
         for(let i = 0; i< FSData.length ; i++){
@@ -25,7 +25,7 @@ export const FDV_R_Upload = ({setFullFSData, setFullFinalTS}) => {
             // console.log(monitorData, fields)
             for(let param of fields){
                 // FSData[i]["unAdjusted_" + param] = monitorData[param] 
-                FSData[i][param] = shiftBeginingWithNaN(monitorData[param], startTime, monitorData.startTimeStamp, monitorData.intervel) 
+                FSData[i][param] = shiftBeginingWithNaN(monitorData[param], startTime, monitorData.startTimeStamp, monitorData.interval) 
             }
         }
 
